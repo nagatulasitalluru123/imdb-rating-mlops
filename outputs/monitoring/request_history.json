@@ -1,0 +1,52 @@
+[
+    {
+        "request_id": 1,
+        "status": "success",
+        "predicted_imdb_rating": 8.06
+    },
+    {
+        "request_id": 2,
+        "status": "success",
+        "predicted_imdb_rating": 7.77
+    },
+    {
+        "request_id": 3,
+        "status": "success",
+        "predicted_imdb_rating": 6.97
+    },
+    {
+        "request_id": 4,
+        "status": "success",
+        "predicted_imdb_rating": 6.58
+    },
+    {
+        "request_id": 5,
+        "status": "success",
+        "predicted_imdb_rating": 6.32
+    },
+    {
+        "request_id": 6,
+        "status": "success",
+        "predicted_imdb_rating": 6.09
+    },
+    {
+        "request_id": 7,
+        "status": "success",
+        "predicted_imdb_rating": 7.99
+    },
+    {
+        "request_id": 8,
+        "status": "success",
+        "predicted_imdb_rating": 6.12
+    },
+    {
+        "request_id": 9,
+        "status": "success",
+        "predicted_imdb_rating": 7.01
+    },
+    {
+        "request_id": 10,
+        "status": "success",
+        "predicted_imdb_rating": 6.35
+    }
+]

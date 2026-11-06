@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: imdb-rating-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: imdb-rating-api
+  template:
+    metadata:
+      labels:
+        app: imdb-rating-api
+    spec:
+      containers:
+        - name: imdb-rating-api
+          image: imdb-rating-api:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 5

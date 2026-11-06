@@ -1,0 +1,8 @@
+{
+    "monitoring_triggered": true,
+    "triggers": [
+        "Concept drift detected",
+        "Performance degradation detected"
+    ],
+    "action": "Retraining recommended"
+}

@@ -1,0 +1,18 @@
+{
+    "service": "IMDb Movie Rating Prediction API",
+    "version": "1.0.0",
+    "model_name": "IMDb_Movie_Rating_Production_Model",
+    "model_version": 1,
+    "model_stage": "Production",
+    "run_id": "f723d7b236464bb1880c21abf7bf33cd",
+    "model_uri": "models:/IMDb_Movie_Rating_Production_Model/1",
+    "model_loaded": true,
+    "preprocessor_loaded": true,
+    "target": "Rating",
+    "task": "regression",
+    "metrics": {
+        "mae": 0.4554649999999994,
+        "rmse": 0.6543058401848476,
+        "r2": 0.5533776226730824
+    }
+}

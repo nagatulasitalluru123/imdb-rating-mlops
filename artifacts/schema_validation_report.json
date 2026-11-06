@@ -1,0 +1,34 @@
+{
+    "validation_status": "PASSED",
+    "rows": 1000,
+    "columns": [
+        "Rank",
+        "Title",
+        "Genre",
+        "Description",
+        "Director",
+        "Actors",
+        "Year",
+        "Runtime (Minutes)",
+        "Rating",
+        "Votes",
+        "Revenue (Millions)",
+        "Metascore"
+    ],
+    "missing_values": {
+        "Rank": 0,
+        "Title": 0,
+        "Genre": 0,
+        "Description": 0,
+        "Director": 0,
+        "Actors": 0,
+        "Year": 0,
+        "Runtime (Minutes)": 0,
+        "Rating": 0,
+        "Votes": 0,
+        "Revenue (Millions)": 128,
+        "Metascore": 64
+    },
+    "duplicate_rows": 0,
+    "errors": []
+}

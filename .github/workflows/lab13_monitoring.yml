@@ -1,0 +1,101 @@
+name: IMDb MLOps Lab 13
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  mlops-monitoring:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python environment
+        shell: powershell
+        run: |
+          Set-Location "$env:GITHUB_WORKSPACE"
+          if (Test-Path ".\venv") { Remove-Item -Recurse -Force ".\venv" }
+          python -m venv venv
+          & ".\venv\Scripts\python.exe" -m pip install --upgrade pip
+          & ".\venv\Scripts\python.exe" -m pip install mlflow==2.17.2 scikit-learn==1.5.2 joblib pandas numpy scipy pyyaml fastapi uvicorn
+
+      - name: Prepare data
+        shell: powershell
+        run: |
+          Set-Location "$env:GITHUB_WORKSPACE"
+          & ".\venv\Scripts\python.exe" src\preprocess.py
+
+      - name: Train and register model
+        shell: powershell
+        run: |
+          Set-Location "$env:GITHUB_WORKSPACE"
+          & ".\venv\Scripts\python.exe" src\train_registry.py
+
+      - name: Automate model lifecycle
+        shell: powershell
+        run: |
+          Set-Location "$env:GITHUB_WORKSPACE"
+          & ".\venv\Scripts\python.exe" src\automate_lifecycle.py
+
+      - name: Prepare deployment bundle
+        shell: powershell
+        run: |
+          Set-Location "$env:GITHUB_WORKSPACE"
+          & ".\venv\Scripts\python.exe" src\prepare_deployment.py
+
+      - name: Generate monitoring datasets
+        shell: powershell
+        run: |
+          Set-Location "$env:GITHUB_WORKSPACE"
+          & ".\venv\Scripts\python.exe" src\12_create_evolved_dataset.py
+          & ".\venv\Scripts\python.exe" src\12_create_concept_drift_dataset.py
+
+      - name: Run Lab 12 monitoring
+        shell: powershell
+        run: |
+          Set-Location "$env:GITHUB_WORKSPACE"
+          & ".\venv\Scripts\python.exe" src\12_data_drift.py
+          & ".\venv\Scripts\python.exe" src\12_concept_drift.py
+          & ".\venv\Scripts\python.exe" src\12_prediction_drift.py
+          & ".\venv\Scripts\python.exe" src\12_performance_monitoring.py
+          & ".\venv\Scripts\python.exe" src\12_performance_trend.py
+          & ".\venv\Scripts\python.exe" src\12_prediction_monitoring.py
+          & ".\venv\Scripts\python.exe" src\12_model_comparison.py
+          & ".\venv\Scripts\python.exe" src\12_request_history.py
+          & ".\venv\Scripts\python.exe" src\12_monitor_trigger.py
+
+      - name: Build Docker image
+        shell: powershell
+        run: |
+          Set-Location "$env:GITHUB_WORKSPACE"
+          docker build -t imdb-rating-api:latest .
+
+      - name: Run Docker smoke test
+        shell: powershell
+        run: |
+          Set-Location "$env:GITHUB_WORKSPACE"
+          docker rm -f imdb-api 2>$null
+          docker run -d -p 8000:8000 --name imdb-api imdb-rating-api:latest
+          Start-Sleep -Seconds 8
+          Invoke-WebRequest "http://localhost:8000/health" -UseBasicParsing
+          docker rm -f imdb-api
+
+      - name: Kubernetes deployment verification
+        shell: powershell
+        run: |
+          Set-Location "$env:GITHUB_WORKSPACE"
+          kubectl get nodes
+          kubectl apply -f k8s\deployment.yaml
+          kubectl apply -f k8s\service.yaml
+          kubectl rollout status deployment/imdb-rating-api --timeout=120s
+          kubectl get deployment imdb-rating-api
+          kubectl get service imdb-rating-api
+
+      - name: Show monitoring result
+        shell: powershell
+        run: |
+          Set-Location "$env:GITHUB_WORKSPACE"
+          Get-Content "outputs\monitoring\monitor_trigger_report.json"
+          Write-Host "[SUCCESS] IMDb Lab 13 end-to-end pipeline completed."
