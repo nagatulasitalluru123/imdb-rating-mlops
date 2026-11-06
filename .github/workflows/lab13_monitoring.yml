@@ -71,20 +71,45 @@ jobs:
         shell: powershell
         run: |
           Set-Location "$env:GITHUB_WORKSPACE"
-          $docker = "C:\Users\Tulasi\AppData\Local\Programs\DockerDesktop\resources\bin\docker.exe"
-          & $docker version
-          & $docker build -t imdb-rating-api:latest .
+          docker version
+          docker build -t imdb-rating-api:latest .
 
       - name: Run Docker smoke test
         shell: powershell
         run: |
           Set-Location "$env:GITHUB_WORKSPACE"
-          $docker = "C:\Users\Tulasi\AppData\Local\Programs\DockerDesktop\resources\bin\docker.exe"
-          & $docker rm -f imdb-api 2>$null
-          & $docker run -d -p 8000:8000 --name imdb-api imdb-rating-api:latest
-          Start-Sleep -Seconds 8
-          Invoke-WebRequest "http://localhost:8000/health" -UseBasicParsing
-          & $docker rm -f imdb-api
+
+          docker rm -f imdb-api 2>$null
+
+          docker run -d -p 8000:8000 --name imdb-api imdb-rating-api:latest
+
+          $healthy = $false
+
+          for ($i = 1; $i -le 30; $i++) {
+              Write-Host "Checking API health... attempt $i of 30"
+
+              try {
+                  $response = Invoke-WebRequest "http://localhost:8000/health" -UseBasicParsing -TimeoutSec 5
+
+                  if ($response.StatusCode -eq 200) {
+                      Write-Host "[SUCCESS] IMDb API is healthy."
+                      $healthy = $true
+                      break
+                  }
+              }
+              catch {
+                  Start-Sleep -Seconds 2
+              }
+          }
+
+          if (-not $healthy) {
+              Write-Host "[ERROR] IMDb API did not become healthy."
+              docker logs imdb-api
+              docker rm -f imdb-api
+              exit 1
+          }
+
+          docker rm -f imdb-api
 
       - name: Kubernetes deployment verification
         shell: powershell
