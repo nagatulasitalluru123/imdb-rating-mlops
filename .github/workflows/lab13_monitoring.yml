@@ -19,7 +19,7 @@ jobs:
           if (Test-Path ".\venv") { Remove-Item -Recurse -Force ".\venv" }
           python -m venv venv
           & ".\venv\Scripts\python.exe" -m pip install --upgrade pip
-          & ".\venv\Scripts\python.exe" -m pip install mlflow==2.17.2 scikit-learn==1.5.2 joblib pandas numpy scipy pyyaml fastapi uvicorn
+          & ".\venv\Scripts\python.exe" -m pip install mlflow==2.17.2 sqlalchemy==2.0.35 scikit-learn==1.5.2 joblib pandas numpy scipy pyyaml fastapi uvicorn
 
       - name: Prepare data
         shell: powershell
