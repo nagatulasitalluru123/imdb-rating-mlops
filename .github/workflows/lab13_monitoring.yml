@@ -8,6 +8,7 @@ on:
 jobs:
   mlops-monitoring:
     runs-on: self-hosted
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -70,26 +71,25 @@ jobs:
         shell: powershell
         run: |
           Set-Location "$env:GITHUB_WORKSPACE"
-          $env:Path += ";C:\Program Files\Docker\Docker\resources\bin"
-          docker version
-          docker build -t imdb-rating-api:latest .
+          $docker = "C:\Users\Tulasi\AppData\Local\Programs\DockerDesktop\resources\bin\docker.exe"
+          & $docker version
+          & $docker build -t imdb-rating-api:latest .
 
       - name: Run Docker smoke test
         shell: powershell
         run: |
           Set-Location "$env:GITHUB_WORKSPACE"
-          $env:Path += ";C:\Program Files\Docker\Docker\resources\bin"
-          docker rm -f imdb-api 2>$null
-          docker run -d -p 8000:8000 --name imdb-api imdb-rating-api:latest
+          $docker = "C:\Users\Tulasi\AppData\Local\Programs\DockerDesktop\resources\bin\docker.exe"
+          & $docker rm -f imdb-api 2>$null
+          & $docker run -d -p 8000:8000 --name imdb-api imdb-rating-api:latest
           Start-Sleep -Seconds 8
           Invoke-WebRequest "http://localhost:8000/health" -UseBasicParsing
-          docker rm -f imdb-api
+          & $docker rm -f imdb-api
 
       - name: Kubernetes deployment verification
         shell: powershell
         run: |
           Set-Location "$env:GITHUB_WORKSPACE"
-          $env:Path += ";C:\Program Files\Docker\Docker\resources\bin"
           kubectl get nodes
           kubectl apply -f k8s\deployment.yaml
           kubectl apply -f k8s\service.yaml
