@@ -70,12 +70,15 @@ jobs:
         shell: powershell
         run: |
           Set-Location "$env:GITHUB_WORKSPACE"
+          $env:Path += ";C:\Program Files\Docker\Docker\resources\bin"
+          docker version
           docker build -t imdb-rating-api:latest .
 
       - name: Run Docker smoke test
         shell: powershell
         run: |
           Set-Location "$env:GITHUB_WORKSPACE"
+          $env:Path += ";C:\Program Files\Docker\Docker\resources\bin"
           docker rm -f imdb-api 2>$null
           docker run -d -p 8000:8000 --name imdb-api imdb-rating-api:latest
           Start-Sleep -Seconds 8
@@ -86,6 +89,7 @@ jobs:
         shell: powershell
         run: |
           Set-Location "$env:GITHUB_WORKSPACE"
+          $env:Path += ";C:\Program Files\Docker\Docker\resources\bin"
           kubectl get nodes
           kubectl apply -f k8s\deployment.yaml
           kubectl apply -f k8s\service.yaml
